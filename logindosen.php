@@ -31,9 +31,9 @@ if (isset($_POST['login'])) {
                 setcookie('login', 'true', time() + 60);
             }
 
-            $data = mysqli_query($koneksi, "select * from dosen");
-            $d = mysqli_fetch_assoc($data);
-            header("Location: haldosen.php");
+            $id_dosen = $cekPw['id_dosen'];
+
+            header("Location: haldosen.php?id_dosen=" . $id_dosen);
             exit;
         }
         $error = true;
@@ -62,9 +62,9 @@ if (isset($_POST['login'])) {
                     <div class="card-header text-light text-center">
                         <img src="logoweb.png" width="160" height="45">
                     </div>
-                    
+
                     <div class="card-body">
-                    <?php
+                        <?php
                         if (isset($error)) {
                             echo "<div class='alert alert-danger' role='alert'>Password wrong, please try again!</div>";
                         }

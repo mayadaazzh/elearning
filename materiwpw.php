@@ -8,15 +8,24 @@ if (!isset($_SESSION["login"])) {
 
 include 'koneksi.php';
 
-if (isset($_SESSION["id_dosen"])) {
-    $id_dosen = $_SESSION["id_dosen"];
-    $query = "SELECT m.*, d.nama_dosen FROM materi m
-              JOIN dosen d ON m.id_dosen = d.id_dosen
-              WHERE m.id_dosen = '$id_dosen'";
-    $result = mysqli_query($koneksi, $query);
-} else {
-    $result = null;
-}
+// if (isset($_SESSION["id_dosen"])) {
+//     $id_dosen = $_SESSION["id_dosen"];
+//     $query = "SELECT m.*, d.nama_dosen FROM materi m
+//               JOIN dosen d ON m.id_dosen = d.id_dosen
+//               WHERE m.id_dosen = '$id_dosen'";
+//     $result = mysqli_query($koneksi, $query);
+// } else {
+//     $result = null;
+// }
+//
+
+$no = 1;
+$id_dosen = $_GET['id_dosen'];
+include 'koneksi.php';
+$query = "SELECT * FROM materi WHERE id_dosen = '$id_dosen'";
+$result = mysqli_query($koneksi, $query);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -97,13 +106,13 @@ if (isset($_SESSION["id_dosen"])) {
                 <a class="nav-link active text-white" href="halmahasiswa.php"><i class="fas fa-user"></i> Profile</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active text-white" href="uploadmateri.php"><i class="fas fa-book"></i> Materi Kuliah</a>
+                <a class="nav-link active text-white" href="materimahasiswa.php"><i class="fas fa-book"></i> Materi Kuliah</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active text-white" href="jadwalmahasiswa.php"><i class="fas fa-calendar-alt"></i> Jadwal Kuliah</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active text-white" href="uploadtugas.php"><i class="fas fa-clipboard"></i> Tugas Kuliah</a>
+                <a class="nav-link active text-white" href="tugasmahasiswa.php"><i class="fas fa-clipboard"></i> Tugas Kuliah</a>
             </li>
         </ul>
     </div>
@@ -127,7 +136,7 @@ if (isset($_SESSION["id_dosen"])) {
                             $no = 1;
                             if ($result && mysqli_num_rows($result) > 0) {
                                 while ($data = mysqli_fetch_assoc($result)) {
-                                    ?>
+                            ?>
                                     <tr>
                                         <td><?php echo $no++; ?></td>
                                         <td><?php echo isset($data['title']) ? $data['title'] : ''; ?></td>

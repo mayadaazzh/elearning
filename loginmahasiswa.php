@@ -79,7 +79,7 @@ if (isset($_POST['login'])) {
                                 <input type="checkbox" class="form-check-input" id="remember" name="remember">
                                 <label class="form-check-label" for="remember">Always remember</label>
                             </div>
-                            <button style="width: 100%;" class="btn btn-dark" type="submit" name="login">LOGIN</button>
+                            <button style="width: 100%;" class="btn btn-dark" type="submit" name="login" href="halmahasiswa.php?id_mahasiswa=<?php echo $cekPw['id_mahasiswa'];?>">LOGIN</button>
                         </form>
                         <hr>
                         <p class="text-center">Belum punya akun? <a href="regis.php">Daftar</a></p>

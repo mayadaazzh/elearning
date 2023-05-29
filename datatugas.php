@@ -7,42 +7,36 @@ if (!isset($_SESSION["login"])) {
 
 include 'koneksi.php';
 
-// Periksa apakah kunci "id_dosen" tersedia dalam $_SESSION
-if (!isset($_SESSION['id_dosen'])) {
-    // Lakukan pengaturan nilai "id_dosen" berdasarkan data dosen yang sedang login
-    $username = $_SESSION['username'];
-    $query = "SELECT id_dosen FROM dosen WHERE username = '$username'";
-    $result = mysqli_query($koneksi, $query);
-    $row = mysqli_fetch_assoc($result);
-
-    $_SESSION['id_dosen'] = $row['id_dosen'];
-}
+$id_tugas = $_GET['id_tugas'];
+$query = "SELECT * FROM tugas WHERE id_tugas = '$id_tugas'";
+$result = mysqli_query($koneksi, $query);
+$roww = mysqli_fetch_assoc($result);
 
 $id_dosen = $_SESSION['id_dosen'];
 
-// Sisanya sama seperti sebelumnya
-$query_sudah = "SELECT m.id_mahasiswa, m.Nama, p.file, n.nilai
+$query_sudah = "SELECT m.id_mahasiswa, m.Nama, p.file, n.nilai, p.id_pengumpulan
                 FROM mahasiswa m
-                LEFT JOIN pengumpulan p ON m.id_mahasiswa = p.id_mahasiswa
+                LEFT JOIN pengumpulan p ON m.id_mahasiswa = p.id_mahasiswa AND p.id_tugas = '$id_tugas'
                 LEFT JOIN nilai n ON p.id_pengumpulan = n.id_pengumpulan
-                WHERE p.id_tugas IN (
-                    SELECT id_tugas FROM tugas WHERE id_dosen = '$id_dosen'
-                )";
+                WHERE p.id_tugas = '$id_tugas'";
 
 $result_sudah = mysqli_query($koneksi, $query_sudah);
 
 $query_belum = "SELECT m.id_mahasiswa, m.Nama
                 FROM mahasiswa m
-                LEFT JOIN pengumpulan p ON m.id_mahasiswa = p.id_mahasiswa
+                LEFT JOIN pengumpulan p ON m.id_mahasiswa = p.id_mahasiswa AND p.id_tugas = '$id_tugas'
                 WHERE p.id_pengumpulan IS NULL
                 AND m.id_mahasiswa NOT IN (
-                    SELECT id_mahasiswa FROM pengumpulan WHERE id_tugas IN (
-                        SELECT id_tugas FROM tugas WHERE id_dosen = '$id_dosen'
-                    )
+                    SELECT id_mahasiswa FROM pengumpulan WHERE id_tugas = '$id_tugas'
                 )";
 
 $result_belum = mysqli_query($koneksi, $query_belum);
 ?>
+
+<?php
+include('./include/header.php');
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,60 +50,67 @@ $result_belum = mysqli_query($koneksi, $query_belum);
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">Data Rekap Nilai Pengumpulan</a>
-        </div>
-    </nav>
-    <div class="container">
-        <h2>Rekap Pengumpulan Tugas</h2>
-        <a href="index.php" class="btn btn-primary">Back</a>
 
-        <h3>Mahasiswa yang Sudah Mengumpulkan Tugas</h3>
+    <div class="content">
+        <a href="uploadtugas.php" class="btn btn-dark">Back</a>
+
+        <h4>Mahasiswa yang Sudah Mengumpulkan Tugas</h4>
         <table class="table table-bordered mt-3">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>No</th>
                     <th>Nama Mahasiswa</th>
                     <th>File Pengumpulan</th>
                     <th>Nilai</th>
+                    <th>Hasil</th> <!-- Tambahan kolom hasil nilai -->
                 </tr>
             </thead>
             <tbody>
-                <?php while ($row = mysqli_fetch_assoc($result_sudah)) : ?>
+                <?php
+                $no = 1;
+                while ($row = mysqli_fetch_assoc($result_sudah)) :
+                ?>
                     <tr>
-                        <th scope="row"><?php echo $row['id_mahasiswa']; ?></th>
+                        <th scope="row"><?php echo $no++; ?></th>
                         <td><?php echo $row['Nama']; ?></td>
                         <td><?php echo $row['file']; ?></td>
-                        <td><?php echo $row['nilai']; ?></td>
+                        <td>
+                            <form method="post" action="editnilaiaksi.php">
+                                <input type="hidden" name="id_tugas" value="<?php echo $roww['id_tugas']; ?>">
+                                <input type="hidden" name="id_pengumpulan" value="<?php echo $row['id_pengumpulan']; ?>">
+                                <input type="number" name="nilai" class="form-control" min="0" max="100" value="<?php echo $row['nilai']; ?>">
+                                <button type="submit" class="btn btn-dark"><i class="fas fa-edit"></i> Simpan</button>
+                            </form>
+                        </td>
+                        <td><?php echo ($row['nilai'] !== null) ? 'Sudah Dinilai' : 'Belum Dinilai'; ?></td> <!-- Menampilkan hasil nilai -->
                     </tr>
                 <?php endwhile; ?>
+
             </tbody>
         </table>
 
-        <h3>Mahasiswa yang Belum Mengumpulkan Tugas</h3>
+        <h4>Mahasiswa yang Belum Mengumpulkan Tugas</h4>
         <table class="table table-bordered mt-3">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>No</th>
                     <th>Nama Mahasiswa</th>
                 </tr>
             </thead>
             <tbody>
-                <?php while ($row = mysqli_fetch_assoc($result_belum)) : ?>
+                <?php
+                $no = 1;
+                while ($row = mysqli_fetch_assoc($result_belum)) :
+                ?>
                     <tr>
-                        <th scope="row"><?php echo $row['id_mahasiswa']; ?></th>
+                        <th scope="row"><?php echo $no++; ?></th>
                         <td><?php echo $row['Nama']; ?></td>
                     </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
-</body>
 
-</html>
+    <?php
+    include('./include/footer.php');
+    ?>

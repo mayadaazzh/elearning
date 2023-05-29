@@ -1,14 +1,13 @@
 <?php
 session_start();
-
 if (!isset($_SESSION["login"])) {
-    header("Location: loginmahasiswa.php");
+    header("Location: index.php");
     exit;
 }
-
 include 'koneksi.php';
 
-$query = "SELECT * FROM dosen";
+$id_dosen = $_GET['id_dosen'];
+$query = "SELECT * FROM tugas WHERE id_dosen = '$id_dosen'";
 $result = mysqli_query($koneksi, $query);
 ?>
 
@@ -90,13 +89,13 @@ $result = mysqli_query($koneksi, $query);
                 <a class="nav-link active text-white" href="halmahasiswa.php"><i class="fas fa-user"></i> Profile</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active text-white" href="uploadmateri.php"><i class="fas fa-book"></i> Materi Kuliah</a>
+                <a class="nav-link active text-white" href="materimahasiswa.php"><i class="fas fa-book"></i> Materi Kuliah</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active text-white" href="jadwalmahasiswa.php"><i class="fas fa-calendar-alt"></i> Jadwal Kuliah</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active text-white" href=""><i class="fas fa-clipboard"></i> Tugas Kuliah</a>
+                <a class="nav-link active text-white" href="tugasmahasiswa.php"><i class="fas fa-clipboard"></i> Tugas Kuliah</a>
             </li>
         </ul>
     </div>
@@ -104,19 +103,58 @@ $result = mysqli_query($koneksi, $query);
     <div class="content">
         <div class="container">
             <div class="row">
-                <?php while ($data = mysqli_fetch_assoc($result)) { ?>
-                    <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="card-title">Mata Kuliah <?php echo $data['matkulampu']; ?></h5>
-                            </div>
-                            <div class="card-body">
-                                <p>Dosen Pengampu: <?php echo $data['nama']; ?></p>
-                                <a href="isitugas.php?id_dosen=<?php echo $data['id_dosen']; ?>" class="btn btn-dark"><i class="fas fa-eye"></i> Lihat Tugas</a>
+
+                <?php
+                $no = 1;
+
+                if ($result && mysqli_num_rows($result) > 0) {
+                    while ($data = mysqli_fetch_assoc($result)) {
+                        $id_tugas = $data['id_tugas'];
+                        $query_pengumpulan = "SELECT * FROM pengumpulan WHERE id_tugas = '$id_tugas'";
+                        $result_pengumpulan = mysqli_query($koneksi, $query_pengumpulan);
+                        $pengumpulan_data = mysqli_fetch_assoc($result_pengumpulan);
+                ?>
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="card-title">Tugas <?php echo $no++ ?>: <?php echo $data['judul']; ?></h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Deskripsi: <?php echo $data['deskripsi']; ?></p>
+                                    <p class="card-text">Deadline: <?php echo $data['deadline']; ?></p>
+                                    <?php if ($pengumpulan_data) { ?>
+                                        <p style="color: green;">Sudah mengumpulkan pada: <?php echo $pengumpulan_data['waktu']; ?></p>
+                                        <p>File yang diunggah: <?php echo $pengumpulan_data['file']; ?></p>
+                                    <?php } else { ?>
+                                        <p style="color: red;">Belum Mengumpulkan</p>
+                                    <?php } ?>
+                                    <p class="card-text">Nilai: <?php echo $data['nilai']; ?></p>
+
+                                    <form method="post" action="submittugasmahasiswa.php" enctype="multipart/form-data">
+                                        <input type="hidden" name="id_tugas" value="<?php echo $data['id_tugas']; ?>">
+                                        <?php if ($pengumpulan_data) { ?>
+                                            <input type="file" name="file" class="form-control" id="inputGroupFile01" required="required">
+                                            <br>
+                                            <button type="submit" name="submit" value="edit" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Data</button>
+                                        <?php } else { ?>
+                                            <input type="file" name="file" class="form-control" id="inputGroupFile01" required="required">
+                                            <br>
+                                            <button type="submit" name="submit" value="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Unggah</button>
+                                        <?php } ?>
+                                    </form>
+                                </div>
                             </div>
                         </div>
+                    <?php
+                    }
+                } else {
+                    ?>
+                    <div class="col-md-12">
+                        <p>Tidak ada data tugas yang tersedia</p>
                     </div>
-                <?php } ?>
+                <?php
+                }
+                ?>
             </div>
         </div>
     </div>

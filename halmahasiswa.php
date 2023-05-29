@@ -99,7 +99,7 @@ $data = mysqli_fetch_assoc($result); // Ambil data mahasiswa
                 <a class="nav-link active text-white" href="jadwalmahasiswa.php"><i class="fas fa-calendar-alt"></i> Jadwal Kuliah</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active text-white" href="uploadtugas.php"><i class="fas fa-clipboard"></i> Tugas Kuliah</a>
+                <a class="nav-link active text-white" href="tugasmahasiswa.php"><i class="fas fa-clipboard"></i> Tugas Kuliah</a>
             </li>
         </ul>
     </div>
@@ -125,38 +125,6 @@ $data = mysqli_fetch_assoc($result); // Ambil data mahasiswa
                         <p>Alamat: <?php echo $data['Alamat']; ?></p>
                         <p>No.Hp: <?php echo $data['No_HP']; ?></p>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card mt-4">
-            <div class="card-header">
-                Mata Kuliah
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <?php
-                    // Menampilkan mata kuliah yang dimiliki oleh mahasiswa
-                    $query2 = "SELECT * FROM matakuliah WHERE id_mahasiswa = '$id_mahasiswa'";
-                    $result2 = mysqli_query($koneksi, $query2);
-
-                    while ($data2 = mysqli_fetch_assoc($result2)) {
-                        $no = 1;
-                    ?>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <?php echo $data2['kelasampu']; ?>
-                                </div>
-                                <div class="card-body">
-                                    <h4><?php echo $data2['matakuliahampu']; ?></h4>
-                                    <a href="wpw<?php echo $no++; ?>.php" class="btn btn-secondary">masuk</a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php
-                    }
-                    ?>
                 </div>
             </div>
         </div>

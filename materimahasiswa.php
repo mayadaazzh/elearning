@@ -90,13 +90,13 @@ $result = mysqli_query($koneksi, $query);
                 <a class="nav-link active text-white" href="halmahasiswa.php"><i class="fas fa-user"></i> Profile</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active text-white" href="uploadmateri.php"><i class="fas fa-book"></i> Materi Kuliah</a>
+                <a class="nav-link active text-white" href="materimahasiswa.php"><i class="fas fa-book"></i> Materi Kuliah</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active text-white" href="jadwalmahasiswa.php"><i class="fas fa-calendar-alt"></i> Jadwal Kuliah</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active text-white" href="uploadtugas.php"><i class="fas fa-clipboard"></i> Tugas Kuliah</a>
+                <a class="nav-link active text-white" href="tugasmahasiswa.php"><i class="fas fa-clipboard"></i> Tugas Kuliah</a>
             </li>
         </ul>
     </div>
@@ -108,11 +108,11 @@ $result = mysqli_query($koneksi, $query);
                     <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-header">
-                                <h5 class="card-title">Mata Kuliah <?php echo $data['matkulampu']; ?></h5>
+                                <h5 class="card-title">Mata Kuliah: <?php echo $data['matkulampu']; ?></h5>
                             </div>
                             <div class="card-body">
                                 <p>Dosen Pengampu: <?php echo $data['nama']; ?></p>
-                                <a href="materiwpw.php" class="btn btn-dark"><i class="fas fa-eye"></i> Lihat Materi</a>
+                                <a href="materiwpw.php?id_dosen=<?php echo $data['id_dosen']; ?>" class="btn btn-dark"><i class="fas fa-eye"></i> Lihat Materi</a>
                             </div>
                         </div>
                     </div>
